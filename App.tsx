@@ -37,7 +37,12 @@ const MyComponent: React.FC = () => {
 
       {error && <Text style={styles.error}>Erro: {error}</Text>}
       
-      {data && <Text style={styles.result}>Resultado da Análise: {data}</Text>}
+      {data && (
+        <View style={styles.resultContainer}>
+          <Text style={styles.result}>Sentimento: {data.sentimento}</Text>
+          <Text style={styles.explanation}>Explicação: {data.explicacao}</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -67,9 +72,15 @@ const styles = StyleSheet.create({
     color: 'red',
     marginTop: 10,
   },
-  result: {
+  resultContainer: {
     marginTop: 10,
+  },
+  result: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  explanation: {
+    fontSize: 14,
+    marginTop: 4,
   },
 });
