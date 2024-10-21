@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, ActivityIndicator, StyleSheet } from 'react-native';
-import { useAnalyse } from './src/hooks/useAnalyse';
-import { ThemeToggle } from '~/components/ThemeToggle';
+import '../global.css';
 import { StatusBar } from 'expo-status-bar';
-import './global.css';
 import { NAV_THEME } from '~/lib/constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from '~/lib/useColorScheme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme, ThemeProvider } from '@react-navigation/native';
+import { ThemeToggle } from '~/components/ThemeToggle';
+import { useColorScheme } from '~/lib/useColorScheme';
+import { useAnalyse } from '~/src/hooks/useAnalyse';
+import * as SplashScreen from 'expo-splash-screen';
+import { Input } from '~/components/ui/input';
 import { Text } from "~/components/ui/text";
 import { Platform } from 'react-native';
 import { 
@@ -19,7 +20,11 @@ import {
   Inter_400Regular, 
   useFonts 
 } from '@expo-google-fonts/inter';
-import { Input } from '~/components/ui/input';
+import { Button } from '~/src/components/ui/button';
+import { cn } from '~/src/lib/utils';
+import { SearchCheck } from 'lucide-react-native';
+import { Card } from '~/components/ui/card';
+import { Separator } from '~/components/ui/separator';
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -89,79 +94,51 @@ const MyComponent: React.FC = () => {
   }
 
   return (
-    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+    <ThemeProvider value={isDarkColorScheme ? LIGHT_THEME : DARK_THEME}>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-      {
-        <View style={styles.container}>
-          <ThemeToggle />
-          <Text style={styles.title}>Análise de Texto</Text>
+        <View className='w-screen bg-background h-full'>
+          <View className="absolute top-20 right-8">
+            <ThemeToggle />
+          </View>
 
-          <Input
-            style={styles.input}
-            placeholder="Digite o texto"
-            value={inputText}
-            onChangeText={setInputText}
-          />
+          {/* Conteúdo centralizado */}
+          <View className="flex flex-col justify-center gap-y-4 px-10 h-full">
+            <Text className="text-2xl text-primary font-regular text-center mb-5">
+              Análise de Texto
+            </Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Digite o contexto"
-            value={context}
-            onChangeText={setContext}
-          />
+            <Input
+              placeholder="Digite o contexto"
+              value={context}
+              onChangeText={setContext}
+              className='rounded-lg text-gray-500'
+            />
 
-          <Button title={loading ? 'Analisando...' : 'Analisar'} onPress={onSubmit} disabled={loading} />
+            <Input
+              placeholder="Digite o texto"
+              value={inputText}
+              onChangeText={setInputText}
+              className='rounded-lg text-gray-500'
+            />
 
-          {loading && <ActivityIndicator size="large" color="#0000ff" />}
+            <Button className='mt-5 rounded-lg' onPress={onSubmit} disabled={loading}>
+              <Text>{loading ? <ActivityIndicator size="small" color="#ffffff" /> : 'Analisar'}</Text>
+            </Button>
 
-          {error && <Text style={styles.error}>Erro: {error}</Text>}
-          
-          {data && (
-            <View style={styles.resultContainer}>
-              <Text style={styles.result}>Sentimento: {data.sentimento}</Text>
-              <Text style={styles.explanation}>Explicação: {data.explicacao}</Text>
-            </View>
-          )}
+            {error && <Text>Erro: {error}</Text>}
+
+            {(
+              <Card className='mt-5 p-3'>
+                <Text className='text-center mb-3 text-primary'>{data?.sentimento}</Text>
+                <Separator className='h-0.5 mb-4'/>
+                <Text className='text-gray-500 text-justify'>{data?.explicacao}</Text>
+              </Card>
+            )}
+          </View>
         </View>
-      }
-    </ThemeProvider>
+      </ThemeProvider>
+
   );
 };
 
 export default MyComponent;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  input: {
-    height: 40,
-    borderColor: '#000',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
-  error: {
-    color: 'red',
-    marginTop: 10,
-  },
-  resultContainer: {
-    marginTop: 10,
-  },
-  result: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  explanation: {
-    fontSize: 14,
-    marginTop: 4,
-  },
-});
