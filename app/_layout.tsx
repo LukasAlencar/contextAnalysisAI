@@ -25,6 +25,7 @@ import { cn } from '~/src/lib/utils';
 import { SearchCheck } from 'lucide-react-native';
 import { Card } from '~/components/ui/card';
 import { Separator } from '~/components/ui/separator';
+import Toast from 'react-native-toast-message';
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -45,6 +46,15 @@ const MyComponent: React.FC = () => {
   const onSubmit = async () => {
     if (inputText && context) {
       await handleAnalisar(inputText, context);
+    }else{
+      Toast.show({
+        type: 'error',
+        text1: 'Alerta',
+        text2: 'Preencha todos os campos!',
+        text1Style:{fontFamily: "Inter_700Bold"},
+        text2Style:{fontFamily: "Inter_700Bold"},
+        position: "bottom",
+      });
     }
   };
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
@@ -127,7 +137,7 @@ const MyComponent: React.FC = () => {
 
             {error && <Text>Erro: {error}</Text>}
 
-            {(
+            {data && (
               <Card className='mt-5 p-3'>
                 <Text className='text-center mb-3 text-primary'>{data?.sentimento}</Text>
                 <Separator className='h-0.5 mb-4'/>
@@ -136,6 +146,7 @@ const MyComponent: React.FC = () => {
             )}
           </View>
         </View>
+        <Toast/>
       </ThemeProvider>
 
   );
